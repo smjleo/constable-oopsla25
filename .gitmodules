@@ -1,0 +1,4 @@
+[submodule "Enzyme-JAX"]
+	path = Enzyme-JAX
+	url = https://github.com/EnzymeAD/Enzyme-JAX/
+	branch = equality-saturation
