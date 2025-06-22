@@ -1,57 +1,86 @@
-FROM nvidia:cuda/12.9.0-cudnn-devel-ubuntu24.04
-SHELL ["/bin/bash", "-c"]
+FROM nvidia/cuda:12.6.0-cudnn-devel-ubuntu24.04
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
-CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
+# create a non-root user
+RUN groupadd -r myuser && \
+    useradd -r -g myuser -d /home/myuser -m myuser
 
-RUN groupadd -r myuser && useradd -r -g myuser myuser
-
-RUN apt-get update
-RUN apt-get -y install apt-utils
-RUN apt-get -y install tzdata --assume-yes
-RUN apt-get -y install autoconf cmake gcc g++ gfortran ninja-build libopenmpi-dev
-RUN apt-get -y install git 
-RUN apt-get -y install wget
-RUN apt-get -y install numactl
-RUN apt-get -y install time
-RUN apt-get -y install libomp-dev
-RUN mkdir /home/myuser
-RUN chown myuser /home/myuser
+# install all apt dep
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      apt-utils tzdata autoconf cmake gcc g++ gfortran \
+      ninja-build libopenmpi-dev git wget curl numactl time libomp-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 USER myuser
-
 WORKDIR /home/myuser
+
+ENV HOME=/home/myuser
+
+# put user‐local bin on PATH
 RUN mkdir -p .local/bin
-ENV PATH "$PATH:/home/myuser/.local/bin"
+ENV PATH="$HOME/.local/bin:$PATH"
 
-# Install Bazel
-CMD ["echo", "Installing Bazel"]
-RUN curl -fLO https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64
-RUN mv bazel* .local/bin/bazel
-RUN chmod +x .local/bin/bazel
-RUN mkdir -p .baztmp
+# Install Bazelisk
+RUN echo "Installing Bazelisk…" && \
+    curl -fLO https://github.com/bazelbuild/bazelisk/releases/download/v1.19.0/bazelisk-linux-amd64 && \
+    mv bazelisk-linux-amd64 .local/bin/bazel && \
+    chmod +x .local/bin/bazel && \
+    mkdir -p .baztmp
 
-# Install Rust, Cargo and cxxbridge
-CMD ["echo", "Installing Rust"]
-ENV RUSTUP_HOME /home/myuser/.local/.rustup
-ENV CARGO_HOME /home/myuser/.local/.cargo
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH "$PATH:/home/myuser/.local/.cargo/bin"
-RUN rustup default stable
-RUN cargo install cxxbridge-cmd
+ # Install Rust + cxxbridge
+ENV RUSTUP_HOME=$HOME/.local/.rustup \
+    CARGO_HOME=$HOME/.local/.cargo
+
+# create the dirs up front under $HOME
+RUN mkdir -p $CARGO_HOME/bin $RUSTUP_HOME && \
+    echo "Installing Rust…" && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="$CARGO_HOME/bin:$PATH"
+RUN rustup default stable && \
+    cargo install cxxbridge-cmd
 
 # Build Enzyme-JAX + Constable
-CMD ["echo", "Building Constable"]
-WORKDIR /home/myuser
-RUN git clone https://github.com/EnzymeAD/Enzyme-JAX
+RUN echo "Building Enzyme-JAX + Constable…" && \
+    git clone https://github.com/EnzymeAD/Enzyme-JAX && \
+    cd Enzyme-JAX && \
+    git checkout 611f0ef && \
+    touch src/enzyme_ad/jax/deps/tensat/cargo-bazel-lock.json
+
+RUN mkdir -p /home/myuser/.eqsat-tmp /home/myuser/Enzyme-JAX/.eqsat-tmp
+ENV TMPDIR=/home/myuser/.eqsat-tmp \
+    TMP=/home/myuser/.eqsat-tmp \
+    TEMP=/home/myuser/.eqsat-tmp \
+    CARGO_BAZEL_REPIN=true
+
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      clang build-essential python3-venv python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+USER myuser 
 
 WORKDIR /home/myuser/Enzyme-JAX
-RUN git checkout 83c90ab
-RUN touch src/enzyme_ad/jax/deps/tensat/cargo-bazel-lock.json
-# TODO: env vars / build flags?
-RUN mkdir .eqsat-tmp
-ENV TMPDIR /home/myuser/Enzyme-JAX/.eqsat-tmp
-ENV TMP home/myuser/Enzyme-JAX/.eqsat-tmp
-ENV TEMP /home/myuser/Enzyme-JAX/.eqsat-tmp
+ENV CONDA_DIR=/home/myuser/miniconda3
+RUN curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+     -o miniconda.sh && \
+    bash miniconda.sh -b -p $CONDA_DIR && \
+    rm miniconda.sh
 
-ENV CARGO_BAZEL_REPIN true
-RUN ./build.sh
+SHELL ["/bin/bash", "-c"]
+RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
+    conda create -y -n enzyme python=3.11 pip && \
+    conda activate enzyme && \
+    conda clean -afy && \
+    conda activate enzyme && \
+    python --version && \
+    pip --version
+
+WORKDIR /home/myuser/Enzyme-JAX
+RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
+    conda activate enzyme && \
+    ./build.sh
+
+# final default
+CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
+
