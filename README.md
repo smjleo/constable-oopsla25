@@ -24,6 +24,8 @@ All claims in the paper can be regenerated with the included scripts.
 | **CPU**   | 8 cores                      | 32 cores                                                   |
 | **GPU**   | NVIDIA GPU (CUDA 12.6+)      | NVIDIA GPU with 24 GiB+ VRAM (Ampere or newer, CUDA 12.6+) |
 
+TODO OS requirement? The instructions below assume Linux/Ubuntu
+
 The paper’s evaluation used A100 40 GB, V100 32 GB, RTX-3090 24 GB, and the corresponding host CPUs (Xeon E5-2603 v4 & Threadripper 3970X). We recommend a CPU with a higher core count as the setup process requires building LLVM, which takes a significant amount of CPU resources.
 
 ## Getting Started
