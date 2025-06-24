@@ -84,6 +84,8 @@ RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
 RUN pip install flax transformers pillow
 RUN pip install jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
+ENV LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+
 # final default
 CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
 WORKDIR /home/myuser/Enzyme-JAX
