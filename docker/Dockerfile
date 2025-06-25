@@ -44,7 +44,7 @@ RUN rustup default stable && \
 RUN echo "Building Enzyme-JAX + Constable…" && \
     git clone https://github.com/EnzymeAD/Enzyme-JAX && \
     cd Enzyme-JAX && \
-    git checkout 611f0ef && \
+    git checkout 6c60e74 && \
     touch src/enzyme_ad/jax/deps/tensat/cargo-bazel-lock.json
 
 RUN mkdir -p /home/myuser/.eqsat-tmp /home/myuser/Enzyme-JAX/.eqsat-tmp
@@ -92,6 +92,6 @@ RUN echo "" >> $HOME/.bashrc && \
 
 # final default
 CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
-WORKDIR /home/myuser/Enzyme-JAX
+WORKDIR /home/myuser/Enzyme-JA X
 RUN ls experiment/
 

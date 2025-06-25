@@ -19,14 +19,14 @@ All claims in the paper can be regenerated with the included scripts.
 ## Hardware Dependencies
 > In the Hardware Dependencies section, describe the hardware required to evaluate the artifact. If the artifact requires specific hardware (e.g., many cores, disk space, GPUs, specific processors), please provide instructions on how to gain access to the hardware. Keep in mind that reviewers must remain anonymous.
 
-| Component | Minimum (quick sanity run)   | Recommended (full reproducibility)                         |
+| Component | Minimum                      | Recommended                                                |
 | --------- | ---------------------------- | ---------------------------------------------------------- |
 | **CPU**   | 8 cores                      | 32 cores                                                   |
 | **GPU**   | NVIDIA GPU (CUDA 12.6+)      | NVIDIA GPU with 24 GiB+ VRAM (Ampere or newer, CUDA 12.6+) |
 
-TODO OS requirement? The instructions were replicated on Ubuntu 24.04 and Debian 12 hosts.
-
 The paper’s evaluation used A100 40 GB, V100 32 GB, RTX-3090 24 GB, and the corresponding host CPUs (Xeon E5-2603 v4 & Threadripper 3970X). We recommend a CPU with a higher core count as the setup process requires building LLVM, which takes a significant amount of CPU resources.
+
+The experiments were run on Ubuntu 24.04 and Debian 12.
 
 ## Getting Started
 > In the Getting Started Guide, give instructions for setup and basic testing. List any software requirements and/or passwords needed to access the artifact. The instructions should take roughly 30 minutes to complete. Reviewers will follow the guide during an initial kick-the-tires phase and report issues as they arise.
@@ -155,17 +155,28 @@ num_repeats=3
 In total, the full experiment (all models, both platforms, 9 runs) can take up to ~14 hours. All repetitions for fast models only will take closer to 1-2 hours.
 
 #### Fast vs Slow Experiment Variants
-We provide the following variants that group fast and slow experiments together:
+We provide the following variants that group fast (<=1 mins per repetition) and slow (>1 min per repetition) experiments together:
+##### Fast
 ```bash
 platforms=("cpu")
-models=("bert" "gpt2" "kan1" "kan2" "llama" "nasrnn" "resnet" )
+models=("jaxmd" "kan1" "kan2" "llama" "nasrnn" "resnet" "searchlesschess")
 num_repeats=9
 ```
 ```bash
 platforms=("gpu")
-models=("bert" "gpt2" "kan1" "kan2" "llama" "nasrnn" "resnet")
+models=("jaxmd" "llama" "maxtext" "nasrnn" "resnet" "searchlesschess")
 num_repeats=9
 ```
+##### Slow
+```bash
+platforms=("cpu")
+models=("bert" "gpt2" "maxtext")
+num_repeats=9
+```
+```bash
+platforms=("gpu")
+models=("bert" "gpt2" "kan1" "kan2")
+num_repeats=9
 
 #### Expected Outputs
 
@@ -221,8 +232,7 @@ experiment/enzyme_vs_eqsat.sh
 ```
 
 #### Expected Runtime
-**TODO**
-See the above table with runtime expectations for the baseline. This ablation has similar runtime characteristics.
+See the above table with runtime expectations for the baseline benchmarks. This ablation has similar runtime characteristics.
 
 #### Expected output
 Similarly to the baseline output, we expect:
@@ -281,9 +291,10 @@ GPT-2 results_gpt2_cost-model_baseline-gpu_2025-03-26_04:04:46_run1.csv \
 #### Running
 We require, as an input to the segmentation experiment, a statistics CSV `stats_segmentation.csv` that counts the number of segments produced under different values of tau, for a given model. Please set the `segmentation_size_csv` variable within `segmentation.sh` to the name/path towards this `.csv` file.
 
-To generate such a `stats_segmentation.csv`, simply run the `generate_stats_for_segmentation.sh` script. It runs each model through Constable with trivial time limits and rewrites in order to record the number of segments for each tau value. For context, we invoke a Python script `compute_time_limits.py` in `segmentation.sh` that uses this file to calculate the ILP/saturation time limits. See `compute_time_limits.py`, which is called in `segmentation.sh`, for more details on this process.
+For convenience, we provide `stats_segmentation.csv` in the Enzyme-JAX repository that provides this information.
+To generate a new stats file (it should be identical to `stats_segmentation.csv`), simply run the `generate_stats_for_segmentation.sh` script. It runs each model through Constable with trivial time limits and rewrites in order to record the number of segments for each tau value. For context, we invoke a Python script `compute_time_limits.py` in `segmentation.sh` that uses this file to calculate the ILP/saturation time limits. See `compute_time_limits.py`, which is called in `segmentation.sh`, for more details on this process.
 
-Once you have `stats_segmentation.csv`;
+Once you have `stats_segmentation.csv`:
 ```bash
 cd Enzyme-JAX
 experiment/segmentation.sh
