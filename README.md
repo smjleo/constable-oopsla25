@@ -23,6 +23,7 @@ All claims in the paper can be regenerated with the included scripts.
 | --------- | ---------------------------- | ---------------------------------------------------------- |
 | **CPU**   | 8 cores                      | 32 cores                                                   |
 | **GPU**   | NVIDIA GPU (CUDA 12.6+)      | NVIDIA GPU with 24 GiB+ VRAM (Ampere or newer, CUDA 12.6+) |
+| **Storage** | 35GB | 50GB |
 
 The paper’s evaluation used A100 40 GB, V100 32 GB, RTX-3090 24 GB, and the corresponding host CPUs (Xeon E5-2603 v4 & Threadripper 3970X). We recommend a CPU with a higher core count as the setup process requires building LLVM, which takes a significant amount of CPU resources.
 
@@ -86,8 +87,8 @@ Either `--gpus` or the environment variable `NVIDIA_VISIBLE_DEVICES` may be used
 3. **Verifying the installation**
 
 ```bash
-JAX_PLATFORM=cpu EQSAT_PLATFORM=cpu python test/llama.py # optimises llama on CPU; finishes in < 30 seconds
-JAX_PLATFORM=gpu EQSAT_PLATFORM=gpu python test/llama.py # optimises llama on GPU; finishes in < 30 seconds
+JAX_PLATFORMS=cpu EQSAT_PLATFORM=cpu python test/llama.py # optimises llama on CPU; finishes in < 30 seconds
+JAX_PLATFORMS=gpu EQSAT_PLATFORM=gpu python test/llama.py # optimises llama on GPU; finishes in < 30 seconds
 ```
 
 Each script prints three numbers: XLA runtime, Enzyme's default optimization pipeline runtime (DefOpt), and Constable runtime.
@@ -223,8 +224,6 @@ For each model, we need to provide a pair `<model-name> <result-csv-run1>`. Cruc
 > It would be a good idea to observe the output to ensure that all relevant files have been loaded.
 
 ### Constable vs Enzyme-JAX
-**TODO** similar content as baseline
-
 The process of running and graphing experiments is very similar to the baseline benchmarks. We highlight the main differences:
 
 #### Running
@@ -258,8 +257,6 @@ GPT-2 results_gpt2_enzyme-ablation-gpu_2025-03-25_22:45:26_run1.csv \
 ```
 
 ### Cost model ablation
-**TODO** similar content as baseline
-
 The process of running and graphing experiments is very similar to the baseline benchmarks. We highlight the main differences:
 
 #### Running
