@@ -323,7 +323,7 @@ GPT-2 results_gpt2-gpu_2025-06-24_10:46:56_run1.csv results_gpt2_tau=5-gpu_2025-
 ...
 ```
 
-As before, we use the `-p` flag to create new plots. However, for each model, we are now required to pass in \emph{two} files: the baseline performance CSV and the segmentation results CSV (for $\tau=5$). The baseline CSV is used to get the runtime for JAX for a given model, so that relative speedup can be measured (the segmentation experiment script does not run JAX measurements to conserve time). Similarly to the above experiments involving multiple runs, the graphing script expects to find other segment size CSVs in the same directory as the $\tau=5$ CSV.
+As before, we use the `-p` flag to create new plots. However, for each model, we are now required to pass in *two* files: the baseline performance CSV and the segmentation results CSV (for $\tau=5$). The baseline CSV is used to get the runtime for JAX for a given model, so that relative speedup can be measured (the segmentation experiment script does not run JAX measurements to conserve time). Similarly to the above experiments involving multiple runs, the graphing script expects to find other segment size CSVs in the same directory as the $\tau=5$ CSV.
 
 > [!NOTE]
 > The graphing script outputs (on standard output) the filenames it found for different segment sizes.
