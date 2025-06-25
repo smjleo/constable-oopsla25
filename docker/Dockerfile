@@ -72,15 +72,16 @@ RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
     conda create -y -n enzyme python=3.11 pip && \
     conda activate enzyme && \
     conda clean -afy && \
-    conda activate enzyme && \
-    python --version && \
-    pip --version && \
-    pip install flax transformers pillow jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+    conda activate enzyme
 
 WORKDIR /home/myuser/Enzyme-JAX
 RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
     conda activate enzyme && \
     ./build.sh
+
+RUN python --version && \
+    pip --version && \
+    pip install absl-py flax transformers pillow ortools jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
 ENV LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 
