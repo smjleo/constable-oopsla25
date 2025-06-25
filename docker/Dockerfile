@@ -79,7 +79,8 @@ RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
     conda activate enzyme && \
     ./build.sh
 
-RUN python --version && \
+RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
+    python --version && \
     pip --version && \
     pip install absl-py flax transformers pillow ortools jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
