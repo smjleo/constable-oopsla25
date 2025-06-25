@@ -177,6 +177,7 @@ num_repeats=9
 platforms=("gpu")
 models=("bert" "gpt2" "kan1" "kan2")
 num_repeats=9
+```
 
 #### Expected Outputs
 
@@ -212,7 +213,7 @@ JAX-MD results_jaxmd-gpu_2025-06-24_10:46:56_run1.csv \
 ```
 
 The `-p <title>` flag creates a new plot. The subsequent arguments until the next `-p` provides the data for that plot.
-For each model, we need to provide a pair `<model-name> <result-csv-run1>`. Crucially, we only pass in the CSV for the first run (out of 9 for the baseline; filename ends in `__run1.csv`). The graphing script parses the filename, and expects to find the other runs in the same directory.
+For each model, we need to provide a pair `<model-name> <result-csv-run1>`. Crucially, we only pass in the CSV for the first run (out of 9 for the baseline; filename ends in `_run1.csv`). The graphing script parses the filename, and expects to find the other runs in the same directory.
 
 > [!NOTE]
 > The graphing script outputs (on standard output) the files it is using for each model.
