@@ -17,7 +17,7 @@ WORKDIR /home/myuser
 
 ENV HOME=/home/myuser
 
-# put user‐local bin on PATH
+# put user local bin on PATH
 RUN mkdir -p .local/bin
 ENV PATH="$HOME/.local/bin:$PATH"
 
@@ -92,6 +92,5 @@ RUN echo "" >> $HOME/.bashrc && \
 
 # final default
 CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
-WORKDIR /home/myuser/Enzyme-JA X
+WORKDIR /home/myuser/Enzyme-JAX
 RUN ls experiment/
-
