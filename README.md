@@ -35,7 +35,7 @@ The experiments were run on Ubuntu 24.04 and Debian 12.
 
 Note that we assume that the target machine has a valid CUDA and GPU driver installation with CUDA 12.6+.
 
-0. **Install NVIDIA container toolkit**
+0. (If not already set up) **Install NVIDIA container toolkit**
 
 Note that CUDA 12.6 containers require an NVIDIA driver in the 525.85 (R525) branch or newer; NVIDIA recommends 560+. We will use toolkit version 1.17.8, which is the latest as of artifact submission.
 
@@ -62,19 +62,23 @@ For more details and instructions for other Linux distros, see [Installing the N
 
 ```bash
 git clone https://github.com/smjleo/constable-oopsla25.git
-cd docker
+cd constable-oopsla25/docker
 docker build -t constable:latest .
 ```
+
 > [!NOTE]
+> If you run into permission issues, run the docker commands with `sudo` or add the current user to the [`docker` group](https://docs.docker.com/engine/install/linux-postinstall/).
+
+> [!WARNING]
 > Building the Docker image will involve compiling LLVM, which can take a significant amount of time. On a Threadripper 3970X, the entire process took around 60 minutes; it may take longer on less powerful processors.
 
 2. **Launch the container**
 
 ```bash
-docker run --rm -it --gpus all constable:latest
+docker run --rm -it --gpus all --entrypoint /bin/bash constable:latest
 
 # One specific GPU (example: GPU 1)
-docker run --rm -it --gpus '"device=1"' constable:latest
+docker run --rm -it --gpus '"device=1"' --entrypoint /bin/bash constable:latest
 ```
 
 Either `--gpus` or the environment variable `NVIDIA_VISIBLE_DEVICES` may be used. We recommend selecting a specific GPU on multi-GPU machines for consistent results.
@@ -82,12 +86,11 @@ Either `--gpus` or the environment variable `NVIDIA_VISIBLE_DEVICES` may be used
 3. **Verifying the installation**
 
 ```bash
-JAX_PLATFORM=cpu EQSAT_PLATFORM=cpu python tests/llama.py # optimises llama on CPU; finishes in < 30 seconds
-JAX_PLATFORM=gpu EQSAT_PLATFORM=gpu python tests/llama.py # optimises llama on GPU; finishes in < 30 seconds
+JAX_PLATFORM=cpu EQSAT_PLATFORM=cpu python test/llama.py # optimises llama on CPU; finishes in < 30 seconds
+JAX_PLATFORM=gpu EQSAT_PLATFORM=gpu python test/llama.py # optimises llama on GPU; finishes in < 30 seconds
 ```
 
 Each script prints three numbers: XLA runtime, Enzyme's default optimization pipeline runtime (DefOpt), and Constable runtime.
-
 
 ## Step-by-Step Instructions
 > In the Step by Step Instructions, explain how to reproduce any experiments or other activities that support the conclusions in your paper. Write this for readers who have a deep interest in your work and are studying it to improve it or compare against it. If your artifact runs for more than a few minutes, point this out, note how long it is expected to run (roughly) and explain how to run it on smaller inputs. Reviewers may choose to run on smaller inputs or larger inputs depending on available resources.
