@@ -74,17 +74,21 @@ RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
     conda clean -afy && \
     conda activate enzyme && \
     python --version && \
-    pip --version
+    pip --version && \
+    pip install flax transformers pillow jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
 WORKDIR /home/myuser/Enzyme-JAX
 RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
     conda activate enzyme && \
     ./build.sh
 
-RUN pip install flax transformers pillow
-RUN pip install jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-
 ENV LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+
+# Inject conda hook + auto-activate into ~/.bashrc
+RUN echo "" >> $HOME/.bashrc && \
+    echo "# >>> conda initialize >>>" >> $HOME/.bashrc && \
+    echo ". $CONDA_DIR/etc/profile.d/conda.sh && conda activate enzyme" >> $HOME/.bashrc && \
+    echo "# <<< conda initialize <<<" >> $HOME/.bashrc
 
 # final default
 CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
