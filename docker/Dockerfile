@@ -94,7 +94,15 @@ RUN echo "" >> $HOME/.bashrc && \
     echo ". $CONDA_DIR/etc/profile.d/conda.sh && conda activate enzyme" >> $HOME/.bashrc && \
     echo "# <<< conda initialize <<<" >> $HOME/.bashrc
 
-# final default
+WORKDIR /home/myuser
+RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
+    conda activate enzyme && \
+    pip install git+https://github.com/wsmoses/jax-md@45059b8f63dad0b5cb171feafff71b82162487e7 && \
+    pip install jraph && \
+    git clone https://github.com/wsmoses/maxtext && \
+    pip install -e maxtext && pip install jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html && \
+    pip install aqtp tensorboardx datasets
+
 CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
 WORKDIR /home/myuser/Enzyme-JAX
 RUN ls experiment/
