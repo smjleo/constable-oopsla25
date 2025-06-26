@@ -100,7 +100,8 @@ RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
     pip install git+https://github.com/wsmoses/jax-md@45059b8f63dad0b5cb171feafff71b82162487e7 && \
     pip install jraph && \
     git clone https://github.com/wsmoses/maxtext && \
-    pip install -e maxtext && pip install jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+    pip install -e maxtext && pip install jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html && \
+    pip install aqtp tensorboardx datasets
 
 CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
 WORKDIR /home/myuser/Enzyme-JAX
