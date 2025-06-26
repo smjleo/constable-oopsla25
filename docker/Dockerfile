@@ -83,7 +83,6 @@ RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
     conda activate enzyme && \
     python --version && \
     pip --version && \
-    pip install absl-py flax transformers pillow ortools jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html && \
     conda install -c conda-forge libstdcxx-ng
 
 ENV LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
@@ -97,11 +96,12 @@ RUN echo "" >> $HOME/.bashrc && \
 WORKDIR /home/myuser
 RUN source "$CONDA_DIR/etc/profile.d/conda.sh" && \
     conda activate enzyme && \
-    pip install git+https://github.com/wsmoses/jax-md@45059b8f63dad0b5cb171feafff71b82162487e7 && \
-    pip install jraph && \
+    pip install -r Enzyme-JAX/builddeps/requirements_lock_3_11.txt && \
+#   pip install git+https://github.com/wsmoses/jax-md@45059b8f63dad0b5cb171feafff71b82162487e7 && \
+#   pip install jraph && \
     git clone https://github.com/wsmoses/maxtext && \
-    pip install -e maxtext && pip install jax==0.4.31 "jax[cuda]==0.4.31" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html && \
-    pip install aqtp tensorboardx datasets
+    pip install -e maxtext && \
+    pip install transformers pillow ortools aqtp tensorboardx datasets
 
 CMD ["echo", "Constable OOPSLA 2025 Docker Image"]
 WORKDIR /home/myuser/Enzyme-JAX
