@@ -70,7 +70,9 @@ For more details and instructions for other Linux distros, see [Installing the N
 > [!NOTE]
 > We recommend selecting a specific GPU on multi-GPU machines for consistent results.
 
-### Pre-built image
+There are two ways to launch the Docker container: we can either use the pre-built image available on Docker Hub, or build the image yourself using the Dockerfile in this repository.
+
+#### Pre-built image
 We recommend you use the pre-built Docker image `smjleo/constable-oopsla25`:
 
 ```bash
@@ -80,7 +82,7 @@ docker run --rm -it --gpus all --entrypoint /bin/bash smjleo/constable-oopsla25:
 docker run --rm -it --gpus '"device=1"' --entrypoint /bin/bash smjleo/constable-oopsla25:latest
 ```
 
-### Build image
+#### Build image
 > [!WARNING]
 > Building the Docker image will involve compiling LLVM, which can take a significant amount of time. On a Threadripper 3970X, the entire process took around 60 minutes; it may take longer on less powerful processors.
 
