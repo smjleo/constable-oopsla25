@@ -44,7 +44,7 @@ RUN rustup default stable && \
 RUN echo "Building Enzyme-JAX + Constable…" && \
     git clone https://github.com/EnzymeAD/Enzyme-JAX && \
     cd Enzyme-JAX && \
-    git checkout 8a1ef74 && \
+    git checkout a4cfda60 && \
     touch src/enzyme_ad/jax/deps/tensat/cargo-bazel-lock.json
 
 RUN mkdir -p /home/myuser/.eqsat-tmp /home/myuser/Enzyme-JAX/.eqsat-tmp
