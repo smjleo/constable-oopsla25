@@ -235,9 +235,9 @@ num_repeats=3
 
 In total, the full experiment (all models, both platforms, 9 runs) can take up to ~14 hours. All repetitions for fast models only will take closer to 1-2 hours.
 
-[!NOTE]
-The default exploration and extraction (ILP) time limits are 10 seconds.
-However, due to a bug in the OR-Tools solver, when `ILP_TIME_LIMIT` is small, `kan1` and `kan2` nondeterministically fail during extraction. To prevent this, we set `ILP_TIME_LIMIT=30` for these KAN networks during the baseline, cost model, and enzyme vs. eqsat ablations. We will make this clear in the revision of the manuscript.
+> [!NOTE]
+> The default exploration and extraction (ILP) time limits are 10 seconds.
+> However, due to a bug in the OR-Tools solver, when `ILP_TIME_LIMIT` is small, `kan1` and `kan2` nondeterministically fail during extraction. To prevent this, we set `ILP_TIME_LIMIT=30` for these KAN networks during the baseline, cost model, and enzyme vs. eqsat ablations. We will make this clear in the revision of the manuscript.
 
 #### Fast vs Slow Experiment Variants
 We provide the following variants that group fast (<=1 min per repetition) and slow (>1 min per repetition) experiments together:
