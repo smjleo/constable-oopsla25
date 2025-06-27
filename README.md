@@ -73,7 +73,7 @@ For more details and instructions for other Linux distros, see [Installing the N
 There are two ways to launch the Docker container: we can either use the pre-built image available on Docker Hub, or build the image yourself using the Dockerfile in this repository.
 
 #### Pre-built image
-We recommend you use the pre-built Docker image `smjleo/constable-oopsla25`:
+We recommend you use the pre-built Docker image `smjleo/constable-oopsla25` (roughly 20GB compressed):
 
 ```bash
 docker run --rm -it --gpus all --entrypoint /bin/bash smjleo/constable-oopsla25:latest
