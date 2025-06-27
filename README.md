@@ -21,11 +21,12 @@ All claims in the paper can be regenerated with the included scripts.
 
 | Component | Minimum                      | Recommended                                                |
 | --------- | ---------------------------- | ---------------------------------------------------------- |
-| **CPU**   | 8 cores                      | 32 cores                                                   |
+| **CPU**   | 8 cores                      | 16 cores                                                   |
 | **GPU**   | NVIDIA GPU (CUDA 12.6+)      | NVIDIA GPU with 24 GiB+ VRAM (Ampere or newer, CUDA 12.6+) |
 | **Storage** | 45GB | 60GB |
 
-The paper’s evaluation used A100 40 GB, V100 32 GB, RTX-3090 24 GB, and the corresponding host CPUs (Xeon E5-2603 v4 & Threadripper 3970X). We recommend a CPU with a higher core count as the setup process requires building LLVM, which takes a significant amount of CPU resources.
+The paper’s evaluation used A100 40 GB, V100 32 GB, RTX-3090 24 GB, and the corresponding host CPUs (Xeon E5-2603 v4 & Threadripper 3970X).
+If you choose to build the Docker image yourself, we recommend a CPU with a higher core count as the setup process requires compiling LLVM from source, which takes a significant amount of CPU resources.
 
 > [!NOTE]
 > We recommend avoiding the use of virtualized CPU cores, especially when benchmarking (use bare metal instead). Constable uses ortools / SCP ILP solver which is quite demanding on CPUs. We find that virtual CPUs often underperform bare metal in this setting, which can lead to timeouts in the ILP solving.
@@ -62,21 +63,35 @@ sudo systemctl restart docker
 
 For more details and instructions for other Linux distros, see [Installing the NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
-1. **Clone & pull the Docker image**
+1. **Launch Docker container**
+> [!NOTE]
+> If you run into permission issues, run the docker commands with `sudo` or add the current user to the [`docker` group](https://docs.docker.com/engine/install/linux-postinstall/).
 
+> [!NOTE]
+> We recommend selecting a specific GPU on multi-GPU machines for consistent results.
+
+### Pre-built image
+We recommend you use the pre-built Docker image `smjleo/constable-oopsla25`:
+
+```bash
+docker run --rm -it --gpus all --entrypoint /bin/bash smjleo/constable-oopsla25:latest
+
+# One specific GPU (example: GPU 1)
+docker run --rm -it --gpus '"device=1"' --entrypoint /bin/bash smjleo/constable-oopsla25:latest
+```
+
+### Build image
+> [!WARNING]
+> Building the Docker image will involve compiling LLVM, which can take a significant amount of time. On a Threadripper 3970X, the entire process took around 60 minutes; it may take longer on less powerful processors.
+
+To build the image yourself, first clone and pull the Docker image:
 ```bash
 git clone https://github.com/smjleo/constable-oopsla25.git
 cd constable-oopsla25/docker
 docker build -t constable:latest .
 ```
 
-> [!NOTE]
-> If you run into permission issues, run the docker commands with `sudo` or add the current user to the [`docker` group](https://docs.docker.com/engine/install/linux-postinstall/).
-
-> [!WARNING]
-> Building the Docker image will involve compiling LLVM, which can take a significant amount of time. On a Threadripper 3970X, the entire process took around 60 minutes; it may take longer on less powerful processors.
-
-2. **Launch the container**
+and launch the container.
 
 ```bash
 docker run --rm -it --gpus all --entrypoint /bin/bash constable:latest
@@ -85,9 +100,7 @@ docker run --rm -it --gpus all --entrypoint /bin/bash constable:latest
 docker run --rm -it --gpus '"device=1"' --entrypoint /bin/bash constable:latest
 ```
 
-Either `--gpus` or the environment variable `NVIDIA_VISIBLE_DEVICES` may be used. We recommend selecting a specific GPU on multi-GPU machines for consistent results.
-
-3. **Verifying the installation**
+2. **Verify the installation**
 
 ```bash
 JAX_PLATFORMS=cpu EQSAT_PLATFORM=cpu python test/llama.py # optimises llama on CPU; finishes in < 30 seconds
