@@ -554,12 +554,17 @@ export EXPERIMENT_NAME="bert-cpu_2025-06-24_10:46:56_run1"    # Dump results int
 
 Constable is implemented across C++ and Rust, and can be invoked in Python through the `enzyme_jax` package.
 
-**TODO**
-|Filename|Description|
-|--------|-----------|
-|`src/enzyme_ad/jax/Passes/EqualitySaturation.cpp`|Main C++ implementation of Constable. Responsible for calling Rust to build the e-graph, trigger optimization, and convert back to StableHLO. Also implements the empirical cost model and segmentation.|
-|`src/enzyme_ad/jax/Passes/EqualitySaturation.h`|Functions exposed to Rust for calling the cost model.|
-|TODO rust directory||
+| Filename | Description |
+|----------|-------------|
+| `src/enzyme_ad/jax/Passes/EqualitySaturation.cpp` | Main C++ implementation of Constable. Responsible for calling Rust to build the e-graph, trigger optimisation, and convert back to StableHLO. Also implements the empirical cost model and segmentation.|
+| `src/enzyme_ad/jax/Passes/EqualitySaturation.h` | Functions exposed to Rust for calling the cost model.|
+| `src/enzyme_ad/jax/deps/tensat/src/ffi_utils.rs` | Helper functions to facilitate FFI calls between C++ and Rust |
+| `src/enzyme_ad/jax/deps/tensat/src/input.rs` | Exposes functions for the construction of the e-graph from the C++ side (`CppGraphConverter::new_{node}_op`). Also exposes functions that the C++ side can call to trigger e-graph optimisation (`CppGraphConvert::optimize`).
+| `src/enzyme_ad/jax/deps/tensat/src/model.rs` | Defines the e-graph language (i.e. the types of e-nodes), and the e-graph analysis. |
+| `src/enzyme_ad/jax/deps/tensat/src/optimize.rs` | Exposes functions that call the cost model and triggers extraction. |
+| `src/enzyme_ad/jax/deps/tensat/src/rewrites.rs` | Defines functions that parses the rewrite file and applies it to the e-graph. Also defines functions that load Enzyme-JAX rewrites. |
+| `src/enzyme_ad/jax/deps/tensat/converted.txt` | Simple single-pattern rewrites |
+| `src/enzyme_ad/jax/deps/tensat/converted_multi.txt` | Multi-pattern rewrites |
 
 #### Adding New Rewrite Rules
 There are three ways of adding new rewrite rules:
@@ -568,16 +573,16 @@ There are three ways of adding new rewrite rules:
 * If adding rewrites from Enzyme, we can add the corresponding name in the `MlirRewrites` enum in `src/enzyme_ad/jax/deps/tensat/src/rewrites.rs`, and add the corresponding *abstract pattern* (pattern to be matched without any conditionals or attributes) in `MlirRewrites::to_ast`.
 
 #### Adding New StableHLO Operations
-
-**TODO**
-
 To support additional StableHLO operations:
 
-1. Add operation to encoding (`src/enzyme_ad/jax/deps/src/input.rs`):
-**TODO**
+1. Add operation to model:
+* In `model.rs`, add the operation to the `Mdl` enum, and change `clone_to_mapping`.
+* If the node can be fused, change `fus_i` in `prep_ilp_data` within `optimize.rs`.
 
 2. Implement translation from StableHLO to e-graph representation
-**TODO**
+* In `input.rs`, add the operation to the `Ops` enum, and create the corresponding `new_{node}_op_` function. Expose its signature in the `ffi` module (under `extern "Rust"`). Change `convert_to_node`.
+* Add the node to `recexpr_to_node` in `ffi_utils.rs`
+* In `EqualitySaturation.cpp`, change the `dfs` function to convert the new node into the e-graph representation, using the constructs defined above. Also change `reconstructStablehlo` and `createStableHloOp` which converts the e-graph node back to StableHLO. Change `isBlackboxed` to ensure the node is not blackboxed (some assertions will fail during execution otherwise). If the node should be a zero-cost op, add it to `zeroCostOps`.
 
 3. Define rewrite rules that can optimize the new operation: see the above section.
 
