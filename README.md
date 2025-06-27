@@ -1,7 +1,7 @@
 # Artifact Repository for "Mind the Abstraction Gap: Bringing Equality Saturation to Real-World ML Compilers"
 
 ## Introduction
-> In the Introduction, briefly explain the purpose of the artifact and how it supports the paper. We recommend listing all claims in the paper and stating whether or not each is supported. For supported claims, say how the artifact provides support. For unsupported claims, explain why they are omitted.
+<!-- > In the Introduction, briefly explain the purpose of the artifact and how it supports the paper. We recommend listing all claims in the paper and stating whether or not each is supported. For supported claims, say how the artifact provides support. For unsupported claims, explain why they are omitted. -->
 
 This artifact bundles **Constable**, an equality-saturation optimisation pass for XLA/StableHLO, together with the evaluation scripts needed to run the experiments from the paper.  It supports the following claims:
 
@@ -17,7 +17,7 @@ All claims in the paper can be regenerated with the included scripts.
 <!-- the only exception is the optional full-scale MaxText run on an A100, for which we supply a "small-batch" configuration that finishes in <10 min and preserves the optimisation behaviour. -->
 
 ## Hardware Dependencies
-> In the Hardware Dependencies section, describe the hardware required to evaluate the artifact. If the artifact requires specific hardware (e.g., many cores, disk space, GPUs, specific processors), please provide instructions on how to gain access to the hardware. Keep in mind that reviewers must remain anonymous.
+<!-- > In the Hardware Dependencies section, describe the hardware required to evaluate the artifact. If the artifact requires specific hardware (e.g., many cores, disk space, GPUs, specific processors), please provide instructions on how to gain access to the hardware. Keep in mind that reviewers must remain anonymous. -->
 
 | Component | Minimum                      | Recommended                                                |
 | --------- | ---------------------------- | ---------------------------------------------------------- |
@@ -33,9 +33,9 @@ The paper’s evaluation used A100 40 GB, V100 32 GB, RTX-3090 24 GB, and the co
 The experiments were run on Ubuntu 24.04 and Debian 12.
 
 ## Getting Started
-> In the Getting Started Guide, give instructions for setup and basic testing. List any software requirements and/or passwords needed to access the artifact. The instructions should take roughly 30 minutes to complete. Reviewers will follow the guide during an initial kick-the-tires phase and report issues as they arise.
+<!-- > In the Getting Started Guide, give instructions for setup and basic testing. List any software requirements and/or passwords needed to access the artifact. The instructions should take roughly 30 minutes to complete. Reviewers will follow the guide during an initial kick-the-tires phase and report issues as they arise. -->
 
-> The Getting Started Guide should be as simple as possible, and yet it should stress the key elements of your artifact. Anyone who has followed the Getting Started Guide should have no technical difficulties with the rest of your artifact.
+<!-- > The Getting Started Guide should be as simple as possible, and yet it should stress the key elements of your artifact. Anyone who has followed the Getting Started Guide should have no technical difficulties with the rest of your artifact. -->
 
 Note that we assume that the target machine has a valid CUDA and GPU driver installation with CUDA 12.6+.
 
@@ -97,9 +97,9 @@ JAX_PLATFORMS=gpu EQSAT_PLATFORM=gpu python test/llama.py # optimises llama on G
 Each script prints three numbers: XLA runtime, Enzyme's default optimization pipeline runtime (DefOpt), and Constable runtime.
 
 ## Step-by-Step Instructions
-> In the Step by Step Instructions, explain how to reproduce any experiments or other activities that support the conclusions in your paper. Write this for readers who have a deep interest in your work and are studying it to improve it or compare against it. If your artifact runs for more than a few minutes, point this out, note how long it is expected to run (roughly) and explain how to run it on smaller inputs. Reviewers may choose to run on smaller inputs or larger inputs depending on available resources.
+<!-- > In the Step by Step Instructions, explain how to reproduce any experiments or other activities that support the conclusions in your paper. Write this for readers who have a deep interest in your work and are studying it to improve it or compare against it. If your artifact runs for more than a few minutes, point this out, note how long it is expected to run (roughly) and explain how to run it on smaller inputs. Reviewers may choose to run on smaller inputs or larger inputs depending on available resources. -->
 
-> Be sure to explain the expected outputs produced by the Step by Step Instructions. State where to find the outputs and how to interpret them relative to the paper. If there are any expected warnings or error messages, explain those as well. Ideally, artifacts should include sample outputs and logs for comparison.
+<!-- > Be sure to explain the expected outputs produced by the Step by Step Instructions. State where to find the outputs and how to interpret them relative to the paper. If there are any expected warnings or error messages, explain those as well. Ideally, artifacts should include sample outputs and logs for comparison. -->
 
 Scripts for running experiments can be found in `Enzyme-JAX/experiment`. There are four scripts:
 * `baseline.sh` measures the performance of Constable against XLA and Enzyme-JAX;
@@ -219,19 +219,18 @@ num_repeats=3
 ```
     
 #### Expected Runtime
-**TODO**: sanity check the numbers, I pulled these from our graph_2 logs
 | Model            | CPU Runtime (min) | GPU Runtime (min) |
 |------------------|-------------------|-------------------|
-| bert            | 2               | 5               |
+| bert            | 2               | 4               |
 | gpt2            | 2               | 2               |
 | jaxmd           | 1               | 2               |
-| kan1            | 1               | 2               |
-| kan2            | 1               | 2               |
-| llama           | 1               | 1               |
-| maxtext         | 20+             | 1               |
-| nasrnn          | 1               | 1               |
-| resnet          | 1               | 1               |
-| searchlesschess | 1               | 1               |
+| kan1            | <1              | 2               |
+| kan2            | <1              | 2               |
+| llama           | <1              | <1              |
+| maxtext         | 20              | <1              |
+| nasrnn          | <1              | <1              |
+| resnet          | <1              | <1              |
+| searchlesschess | <1              | <1              |
 
 In total, the full experiment (all models, both platforms, 9 runs) can take up to ~14 hours. All repetitions for fast models only will take closer to 1-2 hours.
 
@@ -429,6 +428,72 @@ The segmentation ablation, unlike the other ablations, has significantly longer 
 | **NasRNN**       | 1                 | 1               |
 | **ResNet**       | 2                 | 1               |
 | **SearchlessChess** | 3              | 13              |
+
+### Sample logs
+We provide sample logs to show rough expected output formats.
+
+#### Stats CSVs
+```csv
+experiment_name,eqsat_time,segments
+bert_cost-model_baseline-cpu_2025-03-25_12:33:11_run1,36.837,7
+bert_cost-model_baseline-gpu_2025-03-25_12:33:11_run1,116.87,7
+gemma_cost-model_baseline-cpu_2025-03-25_12:33:11_run1,34.534,3
+gemma_cost-model_baseline-gpu_2025-03-25_12:33:11_run1,4.416,3
+gpt2_cost-model_baseline-cpu_2025-03-25_12:33:11_run1,37.318,8
+gpt2_cost-model_baseline-gpu_2025-03-25_12:33:11_run1,58.82,8
+...
+```
+
+#### Result CSVs
+```csv
+pipeline,stage,runtime_ms
+JaX  ,Primal,28.84198701940477
+JaX  ,Primal,27.827179990708828
+...
+DefOpt,Primal,25.62545903492719
+DefOpt,Primal,26.201438042335212
+...
+EqSat,Primal,25.178318028338253
+EqSat,Primal,24.80236196424812
+```
+
+#### Log files
+```
+Cost model ablation
+--------------------------
+Running bert_cost-model_baseline-cpu_2025-03-25_12:33:11_run1 (repeat 1/12)...
+Some weights of FlaxBertModel were not initialized from the model checkpoint at bert-base-uncased and are newly initialized: {('pooler', 'dense', 'kernel'), ('pooler', 'dense', 'bias')}
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Running tests under Python 3.11.8: /home/pokemon/.conda/envs/pokemon/bin/python
+[ RUN      ] BertTransformerTest.test
+The current directory is /home/pokemon/Enzyme-JAX
+Number of canonicalized 1
+Run one
+Done one
+Number of nodes added: 0
+Run one
+Done one
+Number of nodes added: 0
+Runner complete!
+  Nodes: 1581
+  Classes: 1154
+  Stopped: Saturated
+  Time taken: 4.189377411s
+  Number of iterations: 15
+  Average nodes per class: 1.3700173
+  Number of edges: 3054
+  Number of programs: 318.3365
+prepped ilp data
+running with fusion costs
+Set number of threads to 8
+Set time limit to 10 seconds
+Number of variables = 2735
+Add eclass constraints
+Objective value = 1489.0
+Problem solved in 397.000000 milliseconds
+Problem solved in 0 iterations
+Problem solved in 1 branch-and-bound nodes
+```
 
 ## Reusability Guide
 ### Using Constable with your own JAX program
