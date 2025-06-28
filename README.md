@@ -7,11 +7,11 @@ This artifact bundles **Constable**, an equality-saturation optimisation pass fo
 
 | Paper claim                                                                                       | Supported by the artifact? | How it is supported                                                                                    |
 | ------------------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **1. Constable delivers mean speed-up of ~3% (max 56.26 %) over stock XLA**                       | **Yes**                    | `experiments/baseline.sh` reproduces Fig. 7.                                                           |
-| **2. Constable outperforms Enzyme-JAX by up to 54.82 %**                                          | **Yes**                    | `experiments/eqsat_vs_enzyme.sh` reproduces Fig. 8.                                                    |
-| **3. Segmentation cuts exploration time while preserving most optimization potential** (Sec. 3.2, 5.5)  | **Yes**                    | `experiments/segmentation.sh` reproduces Fig. 10.                                                      |
-| **4. First-order ILP cost model (fusion-aware) and zero-cost copies matter** (Sec. 3.3, 5.4)      | **Yes**                    | `experiments/cost_model_ablation.sh` toggles fusion bonus and copy cost and reproduces Fig. 9.         |
-| **5. Constable generalises across ten diverse workloads (LLMs, ResNet, MD, KAN, …)**              | **Yes**                    | All workloads are evaluated in `experiments/baseline.sh`                                               |
+| **1. Constable delivers mean speed-up of ~3% (max 56.26 %) over stock XLA**                       | **Yes**                    | `experiment/baseline.sh` reproduces Fig. 7.                                                           |
+| **2. Constable outperforms Enzyme-JAX by up to 54.82 %**                                          | **Yes**                    | `experiment/eqsat_vs_enzyme.sh` reproduces Fig. 8.                                                    |
+| **3. Segmentation cuts exploration time while preserving most optimization potential** (Sec. 3.2, 5.5)  | **Yes**                    | `experiment/segmentation.sh` reproduces Fig. 10.                                                      |
+| **4. First-order ILP cost model (fusion-aware) and zero-cost copies matter** (Sec. 3.3, 5.4)      | **Yes**                    | `experiment/cost_model_ablation.sh` toggles fusion bonus and copy cost and reproduces Fig. 9.         |
+| **5. Constable generalises across ten diverse workloads (LLMs, ResNet, MD, KAN, …)**              | **Yes**                    | All workloads are evaluated in `experiment/baseline.sh`                                               |
 
 All claims in the paper can be regenerated with the included scripts.
 <!-- the only exception is the optional full-scale MaxText run on an A100, for which we supply a "small-batch" configuration that finishes in <10 min and preserves the optimisation behaviour. -->
@@ -86,7 +86,7 @@ docker run --rm -it --gpus '"device=1"' --entrypoint /bin/bash smjleo/constable-
 > [!WARNING]
 > Building the Docker image will involve compiling LLVM, which can take a significant amount of time. On a Threadripper 3970X, the entire process took around 60 minutes; it may take longer on less powerful processors.
 
-To build the image yourself, first clone and pull the Docker image:
+To build the image yourself, first clone and pull the repository:
 ```bash
 git clone https://github.com/smjleo/constable-oopsla25.git
 cd constable-oopsla25/docker
