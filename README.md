@@ -106,7 +106,7 @@ docker run --rm -it --gpus '"device=1"' --entrypoint /bin/bash constable:latest
 
 ```bash
 JAX_PLATFORMS=cpu EQSAT_PLATFORM=cpu python test/llama.py # optimises llama on CPU; finishes in < 30 seconds
-JAX_PLATFORMS=gpu EQSAT_PLATFORM=gpu python test/llama.py # optimises llama on GPU; finishes in < 30 seconds
+JAX_PLATFORMS=cuda EQSAT_PLATFORM=gpu python test/llama.py # optimises llama on GPU; finishes in < 30 seconds
 ```
 
 Each script prints three numbers: XLA runtime, Enzyme's default optimization pipeline runtime (DefOpt), and Constable runtime.
